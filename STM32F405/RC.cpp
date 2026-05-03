@@ -63,18 +63,6 @@ extern uint8_t flag_shoot;
 
 void RC::OnRC()
 {
-    if (rc.s[0] == 1)
-    {
-        ctrl.mode = CONTROL::RC;
-    }
-    else if (rc.s[0] == 0)
-    {
-        ctrl.mode = CONTROL::PC;
-    }
-    else if (rc.s[0] == 2)
-    {
-        ctrl.mode = CONTROL::AUTOAIM;
-    }
     if (rc.go_up == 1 && key_r_toggle == 0)
     {
         can1_motor[4].setspeed = -4000;
@@ -331,22 +319,24 @@ void RC::OnPC()
         }
 
         // ---------------- R 键切换 can1_motor[4][5] 履带----------------
-        /*if (pc.R == 1 && r_last == 0)
+        if (pc.R == 1 && r_last == 0)
         {
         	r_toggle = !r_toggle;
         }
         r_last = pc.R;
 
+
         if (r_toggle)
         {
-        	can1_motor[4].setspeed = -4000;
-        	can1_motor[5].setspeed = 4000;
+            can1_motor[4].setspeed = -4000;
+            can1_motor[5].setspeed = 4000;
         }
         else
         {
-        	can1_motor[4].setspeed = 0;
-        	can1_motor[5].setspeed = 0;
-        }*/
+            can1_motor[4].setspeed = 0;
+            can1_motor[5].setspeed = 0;
+        }
+
 
         // ---------------- F 键切换 can2_motor[0][1] 摩擦轮----------------
         if (pc.F == 1 && f_last == 0)
@@ -354,6 +344,7 @@ void RC::OnPC()
             f_toggle = !f_toggle;
         }
         f_last = pc.F;
+
 
         if (f_toggle)
         {
@@ -367,6 +358,8 @@ void RC::OnPC()
             can2_motor[0].setspeed = 0;
             can2_motor[1].setspeed = 0;
         }
+
+        
         // ---------------- G键切换 flag_shoot (1 <-> 2) ----------------
         if (pc.G == 1 && g_last == 0)
         {
@@ -384,8 +377,21 @@ void RC::OnPC()
 
 void RC::Update()
 {
-    OnRC();
-    OnPC();
+    if (rc.s[0] == 1)
+    {
+        ctrl.mode = CONTROL::RC;
+    }
+    else if (rc.s[0] == 0)
+    {
+        ctrl.mode = CONTROL::PC;
+    }
+    else if (rc.s[0] == 2)
+    {
+        ctrl.mode = CONTROL::AUTOAIM;
+    }
+
+    if(ctrl.mode == CONTROL::RC) OnRC();
+    if(ctrl.mode == CONTROL::PC) OnPC();
 }
 
 

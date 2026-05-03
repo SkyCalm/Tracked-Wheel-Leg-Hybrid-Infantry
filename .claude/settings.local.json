@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python convert_to_utf8.py)",
+      "Bash(python \"e:/Visual Studio_Project/TWLInfantry/patch_taskslist.py\")",
+      "Bash(python \"e:/Visual Studio_Project/TWLInfantry/fix_edit5.py\")",
+      "Bash(python \"e:/Visual Studio_Project/TWLInfantry/fix_final.py\")",
+      "Bash(git checkout *)",
+      "Bash(iconv -f gbk -t utf-8 \"STM32F405/taskslist.cpp\" -o \"STM32F405/taskslist_utf8.cpp\")"
+    ]
+  }
+}

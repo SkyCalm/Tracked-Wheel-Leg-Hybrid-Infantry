@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python \"e:/Visual Studio_Project/TWLInfantry/apply_heat.py\")",
+      "Bash(python \"e:/Visual Studio_Project/TWLInfantry/fix_heat.py\")"
+    ]
+  }
+}

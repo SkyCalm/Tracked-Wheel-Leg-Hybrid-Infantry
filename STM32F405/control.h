@@ -36,7 +36,7 @@ public:
 		float mark_pitch{}, mark_yaw{}, mark_yaw_imu{};
 		PID pantile_PID[3] = { {0.04f,0.f,0.f},{0.05f,0.f,0.f}, {0.f,0.f,0.f} };
 		const float sensitivity_yaw = 4.5f;
-		const float sensitivity_pitch = 2.5f;
+		const float sensitivity_pitch = 0.2f;
 
 		bool aim = false;
 		void Keep_Pantile(float angleKeep, PANTILE::TYPE type, IMU frameOfReference);

@@ -37,7 +37,7 @@ void CONTROL::Init(std::vector<Motor*> motor)
 void CONTROL::Control_Pantile(float ch_yaw, float ch_pitch)
 {
 	ch_pitch *= (-1.f);
-    ch_yaw *= (1.f);// ÐÞ¸Ä·½Ïò
+    ch_yaw *= (1.f);// ä¿®æ”¹æ–¹å‘
 
 	DMmotor[2].setSpeed = 1.5;
 
@@ -118,7 +118,7 @@ void CONTROL::CHASSIS::Update()
 	double s_x = speedx;
 	double s_y = speedy;
 
-	// ³µÌåÏà¶Ô³õÊ¼³¯ÏòµÄÆ«½Ç£¨»¡¶È£©
+	// è½¦ä½“ç›¸å¯¹åˆå§‹æœå‘çš„åè§’ï¼ˆå¼§åº¦ï¼‰
 	double theta = ctrl.GetDelta(
 		mechanicalToDegree(can1_motor[7].angle[now]) - mechanicalToDegree(para.initial_yaw)
 	) / 180.0 * PI;
@@ -126,17 +126,17 @@ void CONTROL::CHASSIS::Update()
 	double st = sin(theta);
 	double ct = cos(theta);
 
-	// È«¾ÖËÙ¶È -> ³µÌåËÙ¶È
+	// å…¨å±€é€Ÿåº¦ -> è½¦ä½“é€Ÿåº¦
 	double vx = s_x * ct + s_y * st;
 	double vy = -s_x * st + s_y * ct;
 
-	// °´ÄãµÄµ×ÅÌÓ³ÉäË³Ðò£º0×óÇ° 1ÓÒÇ° 2ÓÒºó 3×óºó
-	ctrl.chassis_motor[0]->setspeed = +vx + vy - speedz; // ×óÇ°
-	ctrl.chassis_motor[1]->setspeed = -vx + vy - speedz; // ÓÒÇ°
-	ctrl.chassis_motor[2]->setspeed = -vx - vy - speedz; // ÓÒºó
-	ctrl.chassis_motor[3]->setspeed = +vx - vy - speedz; // ×óºó
+	// æŒ‰ä½ çš„åº•ç›˜æ˜ å°„é¡ºåºï¼š0å·¦å‰ 1å³å‰ 2å³åŽ 3å·¦åŽ
+	ctrl.chassis_motor[0]->setspeed = +vx + vy - speedz; // å·¦å‰
+	ctrl.chassis_motor[1]->setspeed = -vx + vy - speedz; // å³å‰
+	ctrl.chassis_motor[2]->setspeed = -vx - vy - speedz; // å³åŽ
+	ctrl.chassis_motor[3]->setspeed = +vx - vy - speedz; // å·¦åŽ
 
-   // ================= ÏÞÎ»±£»¤ =================
+   // ================= é™ä½ä¿æŠ¤ =================
 	if (DMmotor[1].setPos > 0.0f)
 	{
 		DMmotor[1].setPos = 0.0f;
@@ -168,34 +168,36 @@ void CONTROL::PANTILE::Update()
 void CONTROL::SHOOTER::Update()
 {
 	//now_bullet_speed = judgement.data.ext_shoot_data_t.bullet_speed;
-	if (openRub)
-	{
-		ctrl.shooter_motor[0]->setspeed = 7000;
-		ctrl.shooter_motor[1]->setspeed = -7000;
-	}
-	else
-	{
-		ctrl.shooter_motor[0]->setspeed = 0;
-		ctrl.shooter_motor[1]->setspeed = 0;
-	}
-
-	if (supply_bullet && openRub)
-	{
-		if (auto_shoot)
+	if (ctrl.mode == RC) {
+		if (openRub)
 		{
-			//ctrl.supply_motor[0]->setspeed = 2160;
-			//ctrl.supply_motor[0]->spinning = true;
+			ctrl.shooter_motor[0]->setspeed = 7000;
+			ctrl.shooter_motor[1]->setspeed = -7000;
 		}
 		else
 		{
-			//ctrl.supply_motor[0]->setspeed = 2160;
-			//ctrl.supply_motor[0]->spinning = true;
+			ctrl.shooter_motor[0]->setspeed = 0;
+			ctrl.shooter_motor[1]->setspeed = 0;
 		}
-	}
-	else
-	{
-		//ctrl.supply_motor[0]->spinning = false;
-		//ctrl.supply_motor[1]->spinning = false;
+
+		if (supply_bullet && openRub)
+		{
+			if (auto_shoot)
+			{
+				//ctrl.supply_motor[0]->setspeed = 2160;
+				//ctrl.supply_motor[0]->spinning = true;
+			}
+			else
+			{
+				//ctrl.supply_motor[0]->setspeed = 2160;
+				//ctrl.supply_motor[0]->spinning = true;
+			}
+		}
+		else
+		{
+			//ctrl.supply_motor[0]->spinning = false;
+			//ctrl.supply_motor[1]->spinning = false;
+		}
 	}
 }
 

@@ -13,10 +13,10 @@
 #include "judgement.h"
 #include "led.h"
 #include "HTmotor.h"
-#include "Power_read.h"
 #include "Power_limit.h"
 #include "supercap.h"
 #include "xuc_can.h"
+#include "Heat_limit.h"
 // ========= 你的全局对象不改 =========
 Motor can1_motor[CAN1_MOTOR_NUM] = {
     Motor(M3508,SPD,chassis, ID1, PID(10.f, 0.0f, 1.5f,0.f)),
@@ -50,7 +50,6 @@ TIM  timer;
 IMU imu_pantile;
 DELAY delay;
 RC rc;
-POWER power;
 LED led1, led2, led3, led4;
 TASK task;
 CONTROL ctrl;
@@ -77,7 +76,6 @@ static void IMU_CanQueueInit()
     // g_xuc_can_queue = xQueueCreate(16, sizeof(CanRxMsg_t));
 }
 
-
 int main(void)
 {
     SystemClockConfig();
@@ -102,7 +100,7 @@ int main(void)
     rc.Init(&uart6, USART6, 921600);
     //power.Init(&uart1, USART1, 9600);
     judgement.Init(&uart1, 115200, USART1);
-    //supercap.Init(&uart4, 115200, UART4);
+    supercap.Init(&uart5, 115200, UART5);
 
     para.Init();
 
@@ -122,6 +120,7 @@ int main(void)
     });
 
     powerLimiter.Init(g_powerMotors, 60.0f);
+    heatLimiter.Init();
     task.Init();
 
     for (;;);

@@ -1,11 +1,11 @@
 #include "can.h"
 #include "label.h"
 #include "string.h"
-#include "imu.h"          // ? ÐÂÔö£ºÎªÁË CanRxMsg_t / g_imu_can_queue
+#include "imu.h"          // ? æ–°å¢žï¼šä¸ºäº† CanRxMsg_t / g_imu_can_queue
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "xuc_can.h" 
-volatile uint32_t can2_dm_cnt[6] = { 0 };   // [1]..[5] ÓÐÐ§
+volatile uint32_t can2_dm_cnt[6] = { 0 };   // [1]..[5] æœ‰æ•ˆ
 volatile uint32_t can2_dm_last_motor_id = 0;
 volatile uint32_t can2_dm_last_stdid = 0;
 volatile uint8_t  can2_dm_last_d0 = 0;
@@ -59,7 +59,7 @@ void CAN::InitFilter()
     CAN_FilterConfigStructure.FilterIdHigh = 0x0000;
     CAN_FilterConfigStructure.FilterIdLow = 0x0000;
     CAN_FilterConfigStructure.FilterMaskIdHigh = 0x0000;
-    CAN_FilterConfigStructure.FilterMaskIdLow = 0x0000;    // ½ÓÊÕËùÓÐ
+    CAN_FilterConfigStructure.FilterMaskIdLow = 0x0000;    // æŽ¥æ”¶æ‰€æœ‰
     CAN_FilterConfigStructure.FilterFIFOAssignment = CAN_FilterFIFO0;
     CAN_FilterConfigStructure.FilterActivation = ENABLE;
     CAN_FilterConfigStructure.BankNumber = 14;
@@ -145,7 +145,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)
     if (hcan == &can2.hcan)
     {
         error = HAL_CAN_GetError(&can2.hcan);
-        // ±£Áô IMU/XUC µÄ CAN ×ª·¢½Ó¿Ú£¨µ±Ç°¸ÄÎª´®¿Ú·½°¸£¬ÔÝ²»ÆôÓÃ£©
+        // ä¿ç•™ IMU/XUC çš„ CAN è½¬å‘æŽ¥å£ï¼ˆå½“å‰æ”¹ä¸ºä¸²å£æ–¹æ¡ˆï¼Œæš‚ä¸å¯ç”¨ï¼‰
         // if (stdid == 0x99 && hcan->pRxMsg->DLC == 8)
         // {
         //     if (g_imu_can_queue != NULL)

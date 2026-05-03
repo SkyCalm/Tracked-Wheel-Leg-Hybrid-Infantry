@@ -4,6 +4,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "imu.h"   // ✅ 复用 CanRxMsg_t 定义
+#include "judgement.h"
 
 // XUC CAN 队列
 extern QueueHandle_t g_xuc_can_queue;
@@ -14,6 +15,7 @@ struct TxPacket_TJ   // 下位机发出的数据
 {
     uint8_t head[2] = { 'S', 'P' };
     uint8_t mode_TJ = 0;            // 0: 空闲, 1: 自瞄, 2: 小符, 3: 大符
+    uint8_t robot_id = 0;     //3为红方，103为蓝方
     float bullet_speed_TJ = 0.0f;
     uint16_t bullet_count_TJ = 0;   // 子弹累计发送次数
     uint16_t crc16_TJ = 0;

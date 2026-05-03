@@ -52,13 +52,13 @@
     <ClCompile Include="control.cpp" />
     <ClCompile Include="CRC.cpp" />
     <ClCompile Include="gpio.cpp" />
+    <ClCompile Include="Heat_limit.cpp" />
     <ClCompile Include="HTmotor.cpp" />
     <ClCompile Include="imu.cpp" />
     <ClCompile Include="judgement.cpp" />
     <ClCompile Include="label.cpp" />
     <ClCompile Include="motor.cpp" />
     <ClCompile Include="Power_limit.cpp" />
-    <ClCompile Include="Power_read.cpp" />
     <ClCompile Include="RC.cpp" />
     <ClCompile Include="STM32F405.cpp" />
     <ClCompile Include="supercap.cpp" />
@@ -68,11 +68,11 @@
     <ClCompile Include="usart.cpp" />
     <ClCompile Include="xuc_can.cpp" />
     <ClInclude Include="CRC.h" />
+    <ClInclude Include="Heat_limit.h" />
     <ClInclude Include="HTmotor.h" />
     <ClInclude Include="judgement.h" />
     <ClInclude Include="led.h" />
     <ClInclude Include="Power_limit.h" />
-    <ClInclude Include="Power_read.h" />
     <ClInclude Include="supercap.h" />
     <ClInclude Include="sysclk.h" />
     <ClInclude Include="taskslist.h" />

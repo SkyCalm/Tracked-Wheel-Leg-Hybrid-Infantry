@@ -28,7 +28,7 @@ public:
 	uint32_t ID;
 	Kalman kalman{ 1.f,40.f };
 	Motor(const motor_type type, const motor_mode mode, const function_type function, const uint32_t id, PID _speed, PID _position, PID _speed2);
-	Motor(const motor_type type, const motor_mode mode, const function_type function, const uint32_t id, PID _speed, PID _position);//ACEÄ£Ê½
+	Motor(const motor_type type, const motor_mode mode, const function_type function, const uint32_t id, PID _speed, PID _position);//ACEæ¨¡å¼
 	Motor(const motor_type type, const motor_mode mode, const function_type function, const uint32_t id, PID _speed);
 	void recorded_the_Laps();
 	void Ontimer(uint8_t idata[][8], uint8_t* odata);
@@ -50,7 +50,7 @@ public:
 	static int16_t getdeltaa(int16_t diff);
 	static float getAngleDifference(float target, float current);
 	uint8_t getStatus()const;
-	int32_t current{}, curspeed{}, setcurrent{},setspeed{}, torque_current, motor_status, motor_angle_status, sum_angle{};//Õâ¸öcurrentÓÃÓÚÊä³öµçÁ÷»òÕßµçÑ¹
+	int32_t current{}, curspeed{}, setcurrent{},setspeed{}, torque_current, motor_status, motor_angle_status, sum_angle{};//è¿™ä¸ªcurrentç”¨äºè¾“å‡ºç”µæµæˆ–è€…ç”µå‹
 	int16_t adjspeed{};
 	int16_t maxspeed{}, maxcurrent{};
 	Kalman currentKalman{ 1.f,40.f };
@@ -58,7 +58,7 @@ public:
 	int32_t stopAngle;
 	int32_t mode{};
 	int round_count;
-	bool pd = 0, spinning = 0;//pd:µ¥´Î²¦µ¯ spinning:Ò»Ãë°Ë·¢
+	bool pd = 0, spinning = 0;//pd:å•æ¬¡æ‹¨å¼¹ spinning:ä¸€ç§’å…«å‘
 	PID pid[2];
 	float Torque_constant_2006 = (0.18*10)/10000;
 	float setangle{}, angle[2]{},distance{}, initial_x{}, rota_angle{}, reset_rota_angle{}, delta_angle{};
@@ -66,6 +66,6 @@ public:
 	float Torque_right;
 	float const_dx = 0.004974;// m / s  /rpm
 };
-//´Ë´¦Òª¸ù¾İÊµ¼Ê²»Í¬canÏßÉÏµÄµç»úÊıÁ¿½øĞĞ¸ü¸Ä
+//æ­¤å¤„è¦æ ¹æ®å®é™…ä¸åŒcançº¿ä¸Šçš„ç”µæœºæ•°é‡è¿›è¡Œæ›´æ”¹
 extern Motor can1_motor[CAN1_MOTOR_NUM];
 extern Motor can2_motor[CAN2_MOTOR_NUM];

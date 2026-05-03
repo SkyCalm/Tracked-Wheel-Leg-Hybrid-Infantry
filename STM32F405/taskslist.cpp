@@ -1,4 +1,4 @@
-﻿#include "label.h"
+#include "label.h"
 #include "taskslist.h"
 #include "can.h"
 #include "motor.h"
@@ -9,11 +9,11 @@
 #include "led.h"
 #include "delay.h"
 #include "HTmotor.h"
-#include "Power_read.h"
 #include "Power_limit.h"
 #include "supercap.h"
 #include "judgement.h"
 #include "xuc_can.h"
+#include "Heat_limit.h"
 #include "stm32f4xx_hal_can.h"
 #include "stm32f4xx_hal.h"
 #include "FreeRTOS.h"
@@ -161,10 +161,13 @@ void ControlTask(void* pvParameters)
 
 		xuc.Encode();
 		rc.Update();
+
+		// heat control: update each cycle
+		heatLimiter.Update();
 		
 		if (fabs(can2_motor[0].curspeed) > 5000 && fabs(can2_motor[1].curspeed) > 5000) {
 
-			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1)|| rc.rc.go_up == 1) {
+			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1)|| ctrl.shooter.supply_bullet) {
               fire_hold_cnt = 200;   // 收到开火请求后保持一段时间
 			}
 
@@ -181,10 +184,10 @@ void ControlTask(void* pvParameters)
 				}
 			}
           // 2) 未卡弹时，在保持窗口内执行正转供弹
-			else if (fire_hold_cnt > 0) {
+			else if (fire_hold_cnt > 0 && heatLimiter.CanFire()) {
 				fire_hold_cnt--;
 
-				can1_motor[6].setspeed = 6000;
+				can1_motor[6].setspeed = static_cast<int32_t>(6000.f * heatLimiter.GetFireSpeedScale());
 
               // 检查电机电流是否超过卡弹阈值
 				if (can1_motor[6].current > JAM_CURRENT_THRESHOLD ||
@@ -205,6 +208,7 @@ void ControlTask(void* pvParameters)
 			}
             // 3) 无开火请求时停止拨盘电机
 			else {
+				if (fire_hold_cnt > 0) fire_hold_cnt--;
 				can1_motor[6].setspeed = 0;
 				jam_current_cnt = 0;
 			}
