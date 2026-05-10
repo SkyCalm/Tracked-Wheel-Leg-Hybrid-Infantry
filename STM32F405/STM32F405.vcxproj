@@ -65,6 +65,7 @@
     <ClCompile Include="system_stm32f4xx.c" />
     <ClCompile Include="taskslist.cpp" />
     <ClCompile Include="tim.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="usart.cpp" />
     <ClCompile Include="xuc_can.cpp" />
     <ClInclude Include="CRC.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="sysclk.h" />
     <ClInclude Include="taskslist.h" />
     <ClInclude Include="tim.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="usart.h" />
     <ClInclude Include="arm.h" />
     <ClInclude Include="xuc_can.h" />

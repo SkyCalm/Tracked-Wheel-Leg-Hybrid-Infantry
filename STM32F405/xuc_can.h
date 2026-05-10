@@ -49,14 +49,18 @@ public:
     // 只负责打包，不发送
     void Encode();
 
+    float GetImuYaw() { return Rx_TJ.imu_yaw_TJ; }
+    float GetImuPitch() { return Rx_TJ.imu_yaw_TJ; }
     float GetTargetYaw() { return target.yaw; }
     float GetTargetPitch() { return target.pitch; }
+    bool  IMUDataValid();               // 检查 XUC 包中 IMU 数据是否有效
     uint8_t fire_auto = 0;
 public:
     // 发送数组，外部可直接取用
     uint8_t tx_data[sizeof(TxPacket_TJ)] = { 0 };
 
 private:
+    uint8_t frame[UART_MAX_LEN]{};
     TargetAngle target{};
     UART* m_uart = nullptr;
     QueueHandle_t* queueHandler = NULL;

@@ -26,7 +26,7 @@ Motor can1_motor[CAN1_MOTOR_NUM] = {
     Motor(M2006,SPD,chassis, ID6, PID(5.f, 0.0f, 1.f,0.f)),//-
     Motor(M2006,SPD,chassis, ID7, PID(5.f, 0.0f, 1.f,0.f)),//+
     Motor(M2006,SPD,supply, ID8, PID(5.f, 0.0f, 1.5f,0.f)),
-    Motor(M6020,POS_IMU,pantile, ID5, PID(70.f, 0.0f, 1.5f,0.f),PID(0.8f, 0.005f, 15.0f,0.f))
+    Motor(M6020,POS,pantile, ID5, PID(1800.f, 0.0f, 400.0f,0.f),PID(0.8f, 0.005f, 15.0f,0.f))
 };
 Motor can2_motor[CAN2_MOTOR_NUM] = {
     Motor(M3508,SPD_SHOOT,shooter, ID1, PID(5.f, 0.0f, 1.5f,0.f)),//-

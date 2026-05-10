@@ -1,7 +1,7 @@
 #include "motor.h"
 #include "gpio.h"
 #include "HTmotor.h"
-#include "imu.h"
+#include "xuc_can.h"
 #include "rc.h"
 #include "control.h"
 #define DEG_TO_RAD 0.017453292f  // π / 180
@@ -164,7 +164,9 @@ void Motor::Ontimer(uint8_t idata[][8], uint8_t* odata)//idate: receive;odate: t
 	}
 	else if (mode == POS)
 	{
-		setspeed = pid[position].Position(kalman.Filter(getdeltaa(setangle - angle[now])),1000);
+		float error = getdeltaa(setangle - angle[now]);
+		float deg_error = mechanicalToDegree(error);
+		setspeed = pid[position].Position(kalman.Filter(deg_error),1000);
 		setspeed = setrange(setspeed, maxspeed);
 		current = pid[speed].Position(setspeed - curspeed,1000);
 		current = currentKalman.Filter(current);
@@ -172,12 +174,12 @@ void Motor::Ontimer(uint8_t idata[][8], uint8_t* odata)//idate: receive;odate: t
 	}
 	else if (mode == POS_IMU)
 	{
-		if (!imu_pantile.IsDataValid())
+		if (!xuc.IMUDataValid())
 		{
 			setangle = 0.0f;
 		}
 
-		float angle_error = getAngleDifference(setangle, imu_pantile.GetAngleYaw());
+		float angle_error = getAngleDifference(setangle, xuc.GetImuYaw());
 		setspeed = pid[position].Position(kalman.Filter(angle_error), 1000) + K_ROTATION * ctrl.chassis.speedz;
 		setspeed = setrange(setspeed, maxspeed);
 		current = pid[speed].Position(setspeed - curspeed, 1000);

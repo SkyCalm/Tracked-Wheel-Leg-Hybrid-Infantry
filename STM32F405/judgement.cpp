@@ -7,6 +7,7 @@
 #include "xuc_can.h"
 #include "RC.h"
 #include "supercap.h"
+#include "HTmotor.h"
 extern uint8_t flag_shoot;
 
 //void Judgement::BuffData()
@@ -88,6 +89,7 @@ void Judgement::Init(UART* huart, uint32_t baud, USART_TypeDef* uart_base)
     huart->Init(uart_base, baud).DMARxInit();
     m_uart = huart;
     queueHandler = &huart->UartQueueHandler;
+    ui.Init(huart);
 }
 
 // 根据协议自己定义一个最大 data 长度，防止异常长度把缓冲区撑爆
@@ -183,323 +185,65 @@ void Judgement::GetData(void)
 
 
 
-
-void Judgement::DisplayStaticUI()
-{
-    string_data_struct_t staticStringUI;
-
-    switch (count % 100)
-    {
-    case 0:
-    {
-        char UIRPData[5] = {};
-
-        UIRPData[0] = 'G';
-        UIRPData[1] = 'E';
-        UIRPData[2] = 'A';
-        UIRPData[3] = 'R';
-
-        Char_Draw(&staticStringUI, (char*)"PI", UI_Graph_ADD, 9, UI_Color_Green,
-            30, 5, 3, 60, 820, UIRPData);
-
-        Char_ReFresh(&staticStringUI);
-        break;
-    }
-    case 10:
-        break;
-    case 20:
-    {
-        char UICapData[5] = {};
-        UICapData[0] = 'C';
-        UICapData[1] = 'A';
-        UICapData[2] = 'P';
-
-        Char_Draw(&staticStringUI, (char*)"CA", UI_Graph_ADD, 7, UI_Color_Green,
-            30, 3, 3, 60, 760, UICapData);
-
-        Char_ReFresh(&staticStringUI);
-        break;
-    }
-    case 30:
-    {
-        char UIModeData[5] = {};
-        UIModeData[0] = 'M';
-        UIModeData[1] = 'O';
-        UIModeData[2] = 'D';
-        UIModeData[3] = 'E';
-
-        Char_Draw(&staticStringUI, (char*)"MO", UI_Graph_ADD, 6, UI_Color_Green,
-            30, 5, 3, 60, 700, UIModeData);
-
-        Char_ReFresh(&staticStringUI);
-        break;
-    }
-    case 40:
-    {
-        char UICaptureData[7] = {};
-
-        UICaptureData[0] = 'O';
-        UICaptureData[1] = 'P';
-        UICaptureData[2] = 'E';
-        UICaptureData[3] = 'N';
-        UICaptureData[4] = 'R';
-        UICaptureData[5] = 'U';
-        UICaptureData[6] = 'B';
-
-        Char_Draw(&staticStringUI, (char*)"CPT", UI_Graph_ADD, 5, UI_Color_Green,
-            30, 7, 3, 60, 640, UICaptureData);
-
-        Char_ReFresh(&staticStringUI);
-        break;
-    }
-    case 50:
-        break;
-    case 60:
-        break;
-    case 70:
-    {
-        char UICapDisplayData3[3] = {};
-        UICapDisplayData3[0] = '2';
-        UICapDisplayData3[1] = '4';
-        UICapDisplayData3[2] = 'V';
-
-        Char_Draw(&staticStringUI, (char*)"C2", UI_Graph_ADD, 3, UI_Color_Green,
-            20, 3, 2, 1300, 70, UICapDisplayData3);
-
-        Char_ReFresh(&staticStringUI);
-        break;
-    }
-    case 80:
-    {
-        graphic_data_struct_t staticGraohUI3[5] = {};
-        Rectangle_Draw(&staticGraohUI3[0], (char*)"CR", UI_Graph_ADD, 3,
-            UI_Color_Green, 2, 600, 100, 1320, 150);
-        LineDraw(&staticGraohUI3[1], (char*)"CL", UI_Graph_ADD, 3,
-            UI_Color_Yellow, 2, 1032, 100, 1032, 150);
-        LineDraw(&staticGraohUI3[2], (char*)"LL1", UI_Graph_ADD, 3,
-            UI_Color_Main, 2, 480, 100, 700, 400);
-        LineDraw(&staticGraohUI3[3], (char*)"LL2", UI_Graph_ADD, 3,
-            UI_Color_Main, 2, 1440, 100, 1220, 400);
-
-        UI_ReFresh(5, staticGraohUI3);
-        break;
-    }
-    case 90:
-    {
-        graphic_data_struct_t staticGraohUI2[7] = {};
-
-        LineDraw(&staticGraohUI2[0], (char*)"L1", UI_Graph_ADD, 2,
-            UI_Color_Purplish_red, 2, 1011, 280, 1011, 600);
-        Circle_Draw(&staticGraohUI2[3], (char*)"R1", UI_Graph_ADD, 2,
-            UI_Color_Purplish_red, 3, 1011, 505, 10);
-
-        UI_ReFresh(7, staticGraohUI2);
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void Judgement::DisplayRP(int flag)
-{
-    char RP[2] = {};
-    string_data_struct_t RPData;
-
-    switch (flag)
-    {
-    case 0:
-        RP[0] = 'D';
-        RP[1] = '0';
-        break;
-    case 1:
-        RP[0] = 'D';
-        RP[1] = '1';
-        break;
-    case 2:
-        RP[0] = 'D';
-        RP[1] = '2';
-        break;
-    default:
-        break;
-    }
-
-    if (!graphInit)
-    {
-        Char_Draw(&RPData, (char*)"aa", UI_Graph_ADD, 5, UI_Color_Green,
-            30, 2, 3, 280, 820, RP);
-    }
-    else
-    {
-        Char_Draw(&RPData, (char*)"aa", UI_Graph_Change, 5, UI_Color_Green,
-            30, 2, 3, 280, 820, RP);
-    }
-
-    Char_ReFresh(&RPData);
-}
-
-void Judgement::DisplayCapState(uint8_t capState)
-{
-    char capStateChar[5] = {};
-    string_data_struct_t capStateData;
-
-    if (capState == WORKING)
-    {
-        capStateChar[0] = 'W';
-        capStateChar[1] = 'O';
-        capStateChar[2] = 'R';
-        capStateChar[3] = 'K';
-    }
-    else if (capState == DISCHARGE)
-    {
-        capStateChar[0] = 'D';
-        capStateChar[1] = 'I';
-        capStateChar[2] = 'S';
-        capStateChar[3] = 'C';
-        capStateChar[4] = 'H';
-    }
-    else if (capState == SHUT)
-    {
-        capStateChar[0] = 'S';
-        capStateChar[1] = 'H';
-        capStateChar[2] = 'U';
-        capStateChar[3] = 'T';
-    }
-
-    if (!graphInit)
-    {
-        Char_Draw(&capStateData, (char*)"CO1", UI_Graph_ADD, 7, UI_Color_Green,
-            30, 5, 3, 280, 760, capStateChar);
-    }
-    else
-    {
-        Char_Draw(&capStateData, (char*)"CO1", UI_Graph_Change, 7, UI_Color_Green,
-            30, 5, 3, 280, 760, capStateChar);
-    }
-
-    Char_ReFresh(&capStateData);
-}
-void Judgement::DisplpayMode(uint8_t mode)
-{
-    char modeChar[7] = {};
-    string_data_struct_t modeData = {};
-    const uint32_t graphOperate = graphInit ? UI_Graph_Change : UI_Graph_ADD;
-
-    if (mode == 1)
-    {
-        modeChar[0] = 'S';
-        modeChar[1] = 'U';
-        modeChar[2] = 'P';
-        modeChar[3] = 'E';
-        modeChar[4] = 'R';
-    }
-    else
-    {
-        modeChar[0] = 'N';
-        modeChar[1] = 'O';
-        modeChar[2] = 'R';
-        modeChar[3] = 'M';
-        modeChar[4] = 'A';
-        modeChar[5] = 'L';
-    }
-
-    Char_Draw(&modeData, (char*)"MD1", graphOperate, 6, UI_Color_Green,
-        30, 7, 3, 280, 700, modeChar);
-    Char_ReFresh(&modeData);
-}
-
-void Judgement::DisplayCapture(bool isCapture)
-{
-    char captureChar[5] = {};
-    string_data_struct_t captureData;
-
-    if (isCapture)
-    {
-        captureChar[0] = 'T';
-        captureChar[1] = 'R';
-        captureChar[2] = 'U';
-        captureChar[3] = 'E';
-    }
-    else
-    {
-        captureChar[0] = 'F';
-        captureChar[1] = 'A';
-        captureChar[2] = 'L';
-        captureChar[3] = 'S';
-        captureChar[4] = 'E';
-    }
-
-    if (!graphInit)
-    {
-        Char_Draw(&captureData, (char*)"CO", UI_Graph_ADD, 5, UI_Color_Green,
-            30, 5, 3, 280, 640, captureChar);
-    }
-    else
-    {
-        Char_Draw(&captureData, (char*)"CO", UI_Graph_Change, 5, UI_Color_Green,
-            30, 5, 3, 280, 640, captureChar);
-    }
-
-    Char_ReFresh(&captureData);
-}
-
-void Judgement::DisplayCapVoltage(float capVoltage)
-{
-    constexpr uint32_t kBarLeft = 604;
-    constexpr uint32_t kBarRight = 1316;
-    constexpr uint32_t kBarCenterY = 125;
-    constexpr uint32_t kBarWidth = 42;
-    constexpr float kCapEnergyMax = 2000.0f;
-
-    graphic_data_struct_t voltageData{};
-    float energy = capVoltage;
-
-    if (energy < 0.0f)
-        energy = 0.0f;
-    else if (energy > kCapEnergyMax)
-        energy = kCapEnergyMax;
-
-    const uint32_t voltagePos = kBarLeft +
-        static_cast<uint32_t>(energy * (kBarRight - kBarLeft) / kCapEnergyMax);
-
-    if (!graphInit)
-    {
-        LineDraw(&voltageData, (char*)"VD1", UI_Graph_ADD, 3, UI_Color_Yellow,
-            kBarWidth, kBarLeft, kBarCenterY, voltagePos, kBarCenterY);
-    }
-    else
-    {
-        LineDraw(&voltageData, (char*)"VD1", UI_Graph_Change, 3, UI_Color_Yellow,
-            kBarWidth, kBarLeft, kBarCenterY, voltagePos, kBarCenterY);
-    }
-
-    UI_ReFresh(1, &voltageData);
-}
-
 void Judgement::SendData(void)
 {
-    robotId = data.robot_status_t.robot_id;
-    clientId = robotId | 0x100;
+    ui.robotId = data.robot_status_t.robot_id;
+    ui.clientId = ui.robotId | 0x100;
 
     if (count < 200)
     {
-        DisplayStaticUI();
+        ui.DisplayStaticUI(count);
     }
     else
     {
-        switch (count % 20)
+        switch (count % 10)
         {
-        case 0:
-            DisplayRP(rc.gear);
+        case 0: // 电机连接状态: Yaw, Pitch, Shoot_L, Shoot_R
+            ui.UpdateMotorConnection(0, can1_motor[7].getStatus() == FINE);
+            ui.UpdateMotorConnection(1, DMmotor[2].err == 0);
+            ui.UpdateMotorConnection(2, can2_motor[0].getStatus() == FINE);
+            ui.UpdateMotorConnection(3, can2_motor[1].getStatus() == FINE);
             break;
-        case 4:
-            DisplayCapState(supercap.Txsuper.state);
+        case 1: // 电机连接状态: Chassis_1~4
+            ui.UpdateMotorConnection(4, can1_motor[0].getStatus() == FINE);
+            ui.UpdateMotorConnection(5, can1_motor[1].getStatus() == FINE);
+            ui.UpdateMotorConnection(6, can1_motor[2].getStatus() == FINE);
+            ui.UpdateMotorConnection(7, can1_motor[3].getStatus() == FINE);
+            break;
+        case 2: // 电机连接状态: Leg_1, Leg_2, Track_1, Track_2
+            ui.UpdateMotorConnection(8,  DMmotor[0].err == 0);
+            ui.UpdateMotorConnection(9,  DMmotor[1].err == 0);
+            ui.UpdateMotorConnection(10, can1_motor[4].getStatus() == FINE);
+            ui.UpdateMotorConnection(11, can1_motor[5].getStatus() == FINE);
+            break;
+        case 3: // 命中指示 — 检测护甲 ID 变化
+        {
+            static uint8_t last_armor = 0;
+            static uint8_t hit_persist = 0;
+            const uint8_t cur_armor = data.hurt_data_t.armor_id;
+            if (cur_armor != 0 && cur_armor != last_armor)
+            {
+                last_armor = cur_armor;
+                hit_persist = 10; // 命中后持续显示约 300ms
+            }
+            const bool showHit = (hit_persist > 0);
+            if (hit_persist > 0) hit_persist--;
+            ui.UpdateHitIndicator(showHit);
+            break;
+        }
+        case 4: // 腿高度
+            ui.UpdateLegHeight((DMmotor[0].setPos - DMmotor[1].setPos) * 0.5f / 0.95f);
+            break;
+        case 5: // 卡弹指示
+            ui.UpdateBlockIndicator(ctrl.shooter.jam_block);
+            break;
+        case 6:
+            break;
+        case 7:
             break;
         case 8:
-            DisplayCapVoltage(supercap.Rxsuper.cap_energy);
             break;
-        case 12:
-            DisplayCapture(ctrl.shooter.displayOpenRub);
+        case 9:
             break;
         default:
             break;
@@ -507,11 +251,11 @@ void Judgement::SendData(void)
     }
 
     const uint8_t modeFlag = (flag_shoot == 1) ? 1 : 0;
-    DisplpayMode(modeFlag);
+    ui.DisplayMode(modeFlag);
 
-    if (count > 220)
+    if (count > 500)
     {
-        graphInit = true;
+        ui.graphInit = true;
     }
 
     count++;
@@ -785,318 +529,4 @@ bool Judgement::Transmit(uint32_t read_size, uint8_t* plate)
 
     m_leftsize = m_leftsize - read_size;
     return true;
-}
-
-/************************************************绘制直线*************************************************/
-void Judgement::LineDraw(graphic_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    uint32_t End_x, uint32_t End_y)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->figure_name[2 - i] = imagename[i];
-
-    image->figure_tpye = UI_Graph_Line;
-    image->operate_tpye = Graph_Operate;
-    image->layer = Graph_Layer;
-    image->color = Graph_Color;
-    image->width = Graph_Width;
-    image->start_x = Start_x;
-    image->start_y = Start_y;
-    image->end_x = End_x;
-    image->end_y = End_y;
-}
-
-/************************************************绘制矩形*************************************************/
-void Judgement::Rectangle_Draw(graphic_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    uint32_t End_x, uint32_t End_y)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->figure_name[2 - i] = imagename[i];
-
-    image->figure_tpye = UI_Graph_Rectangle;
-    image->operate_tpye = Graph_Operate;
-    image->layer = Graph_Layer;
-    image->color = Graph_Color;
-    image->width = Graph_Width;
-    image->start_x = Start_x;
-    image->start_y = Start_y;
-    image->end_x = End_x;
-    image->end_y = End_y;
-}
-
-/************************************************绘制整圆*************************************************/
-void Judgement::Circle_Draw(graphic_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    uint32_t Graph_Radius)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->figure_name[2 - i] = imagename[i];
-
-    image->figure_tpye = UI_Graph_Circle;
-    image->operate_tpye = Graph_Operate;
-    image->layer = Graph_Layer;
-    image->color = Graph_Color;
-    image->width = Graph_Width;
-    image->start_x = Start_x;
-    image->start_y = Start_y;
-    image->radius = Graph_Radius;
-}
-
-/************************************************绘制圆弧*************************************************/
-void Judgement::Arc_Draw(graphic_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_StartAngle,
-    uint32_t Graph_EndAngle, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    uint32_t x_Length, uint32_t y_Length)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->figure_name[2 - i] = imagename[i];
-
-    image->figure_tpye = UI_Graph_Arc;
-    image->operate_tpye = Graph_Operate;
-    image->layer = Graph_Layer;
-    image->color = Graph_Color;
-    image->width = Graph_Width;
-    image->start_x = Start_x;
-    image->start_y = Start_y;
-    image->start_angle = Graph_StartAngle;
-    image->end_angle = Graph_EndAngle;
-    image->end_x = x_Length;
-    image->end_y = y_Length;
-}
-
-/************************************************绘制浮点型数据*************************************************/
-void Judgement::Float_Draw(float_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_Size,
-    uint32_t Graph_Digit, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    float Graph_Float)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->figure_name[2 - i] = imagename[i];
-
-    image->figure_tpye = UI_Graph_Float;
-    image->operate_tpye = Graph_Operate;
-    image->layer = Graph_Layer;
-    image->color = Graph_Color;
-    image->width = Graph_Width;
-    image->start_x = Start_x;
-    image->start_y = Start_y;
-    image->start_angle = Graph_Size;
-    image->end_angle = Graph_Digit;
-
-    int32_t temp1 = static_cast<int32_t>(Graph_Float * 1000.0f);
-    int32_t temp2 = temp1 / 1024;
-    image->end_x = temp2;
-    image->radius = temp1 - temp2 * 1024; // 1 -> 1.024e-3
-}
-
-/************************************************绘制字符型数据*************************************************/
-void Judgement::Char_Draw(string_data_struct_t* image, char imagename[3],
-    uint32_t Graph_Operate, uint32_t Graph_Layer,
-    uint32_t Graph_Color, uint32_t Graph_Size,
-    uint32_t Graph_Digit, uint32_t Graph_Width,
-    uint32_t Start_x, uint32_t Start_y,
-    char* Char_Data)
-{
-    memset(image, 0, sizeof(*image));
-    int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->Graph_Control.figure_name[2 - i] = imagename[i];
-
-    image->Graph_Control.figure_tpye = UI_Graph_Char;
-    image->Graph_Control.operate_tpye = Graph_Operate;
-    image->Graph_Control.layer = Graph_Layer;
-    image->Graph_Control.color = Graph_Color;
-    image->Graph_Control.width = Graph_Width;
-    image->Graph_Control.start_x = Start_x;
-    image->Graph_Control.start_y = Start_y;
-    image->Graph_Control.start_angle = Graph_Size;
-    image->Graph_Control.end_angle = Graph_Digit;
-
-    for (i = 0; i < static_cast<int>(Graph_Digit); i++)
-    {
-        image->show_Data[i] = *Char_Data;
-        Char_Data++;
-    }
-}
-
-/************************************************UI删除函数*************************************************/
-void Judgement::UIDelete(uint8_t deleteOperator, uint8_t deleteLayer)
-{
-    uint16_t dataLength;
-    CommunatianData_graphic_t UIDeleteData;
-
-    UIDeleteData.txFrameHeader.sof = 0xA5;
-    UIDeleteData.txFrameHeader.data_length = 8;
-    UIDeleteData.txFrameHeader.seq = UI_seq;
-
-    memcpy(m_uarttx, &UIDeleteData.txFrameHeader, sizeof(frame_header_t));
-    AppendCRC8CheckSum(m_uarttx, sizeof(frame_header_t));
-
-    UIDeleteData.CMD = UI_CMD_Robo_Exchange;
-    UIDeleteData.txID.data_cmd_id = UI_Data_ID_Del;
-    UIDeleteData.txID.receiver_ID = clientId;
-    UIDeleteData.txID.sender_ID = robotId;
-
-    memcpy(m_uarttx + 5, (uint8_t*)&UIDeleteData.CMD, 8);
-
-    m_uarttx[13] = deleteOperator;
-    m_uarttx[14] = deleteLayer;
-
-    dataLength = sizeof(CommunatianData_graphic_t) + 2;
-
-    AppendCRC16CheckSum(m_uarttx, dataLength);
-
-    m_uart->UARTTransmit(m_uarttx, dataLength);
-    UI_seq++;
-}
-
-/************************************************UI推送图形*************************************************/
-void Judgement::UI_ReFresh(int cnt, graphic_data_struct_t* imageData)
-{
-    uint8_t dataLength;
-    CommunatianData_graphic_t graphicData;
-    memset(m_uarttx, 0, DMA_TX_SIZE);
-
-    graphicData.txFrameHeader.sof = UI_SOF;
-    graphicData.txFrameHeader.data_length = 6 + cnt * 15;
-    graphicData.txFrameHeader.seq = UI_seq;
-
-    memcpy(m_uarttx, &graphicData.txFrameHeader, sizeof(frame_header_t));
-    AppendCRC8CheckSum(m_uarttx, sizeof(frame_header_t));
-
-    graphicData.CMD = UI_CMD_Robo_Exchange;
-    switch (cnt)
-    {
-    case 1:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw1;
-        break;
-    case 2:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw2;
-        break;
-    case 5:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw5;
-        break;
-    case 7:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw7;
-        break;
-    default:
-        break;
-    }
-
-    graphicData.txID.sender_ID = robotId;
-    graphicData.txID.receiver_ID = clientId;
-
-    memcpy(m_uarttx + 5, (uint8_t*)&graphicData.CMD, 8);
-
-    memcpy(m_uarttx + 13, imageData,
-        cnt * sizeof(graphic_data_struct_t));
-    dataLength = sizeof(CommunatianData_graphic_t) +
-        cnt * sizeof(graphic_data_struct_t);
-
-    AppendCRC16CheckSum(m_uarttx, dataLength);
-
-    m_uart->UARTTransmit(m_uarttx, dataLength);
-    UI_seq++;
-}
-
-/************************************************UI推送浮点*************************************************/
-void Judgement::UI_ReFresh(int cnt, float_data_struct_t* floatdata)
-{
-    uint8_t dataLength;
-    CommunatianData_graphic_t graphicData;
-    memset(m_uarttx, 0, DMA_TX_SIZE);
-
-    graphicData.txFrameHeader.sof = UI_SOF;
-    graphicData.txFrameHeader.data_length =
-        6 + cnt * sizeof(graphic_data_struct_t);
-    graphicData.txFrameHeader.seq = UI_seq;
-
-    memcpy(m_uarttx, &graphicData.txFrameHeader, sizeof(frame_header_t));
-    AppendCRC8CheckSum(m_uarttx, sizeof(frame_header_t));
-
-    graphicData.CMD = UI_CMD_Robo_Exchange;
-    switch (cnt)
-    {
-    case 1:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw1;
-        break;
-    case 2:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw2;
-        break;
-    case 5:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw5;
-        break;
-    case 7:
-        graphicData.txID.data_cmd_id = UI_Data_ID_Draw7;
-        break;
-    default:
-        break;
-    }
-
-    graphicData.txID.sender_ID = robotId;
-    graphicData.txID.receiver_ID = clientId;
-
-    memcpy(m_uarttx + 5, (uint8_t*)&graphicData.CMD, 8);
-
-    memcpy(m_uarttx + 13, floatdata,
-        cnt * sizeof(graphic_data_struct_t));
-    dataLength = sizeof(CommunatianData_graphic_t) +
-        cnt * sizeof(graphic_data_struct_t);
-
-    AppendCRC16CheckSum(m_uarttx, dataLength);
-
-    m_uart->UARTTransmit(m_uarttx, dataLength);
-    UI_seq++;
-}
-
-/************************************************UI推送字符*************************************************/
-void Judgement::Char_ReFresh(string_data_struct_t* string_Data)
-{
-    uint8_t dataLength;
-    CommunatianData_graphic_t graphicData;
-    memset(m_uarttx, 0, DMA_TX_SIZE);
-
-    graphicData.txFrameHeader.sof = UI_SOF;
-    graphicData.txFrameHeader.data_length = 51;
-    graphicData.txFrameHeader.seq = UI_seq;
-
-    memcpy(m_uarttx, &graphicData.txFrameHeader, sizeof(frame_header_t));
-    AppendCRC8CheckSum(m_uarttx, sizeof(frame_header_t));
-
-    graphicData.CMD = UI_CMD_Robo_Exchange;
-    graphicData.txID.data_cmd_id = UI_Data_ID_DrawChar;
-    graphicData.txID.sender_ID = robotId;
-    graphicData.txID.receiver_ID = clientId;
-
-    memcpy(m_uarttx + 5, (uint8_t*)&graphicData.CMD, 8);
-
-    memcpy(m_uarttx + 13, string_Data, sizeof(string_data_struct_t));
-    dataLength = sizeof(CommunatianData_graphic_t) +
-        sizeof(string_data_struct_t);
-
-    AppendCRC16CheckSum(m_uarttx, dataLength);
-
-    m_uart->UARTTransmit(m_uarttx, dataLength);
-    UI_seq++;
 }

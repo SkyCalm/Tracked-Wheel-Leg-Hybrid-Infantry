@@ -65,8 +65,8 @@ void RC::OnRC()
 {
     if (rc.go_up == 1 && key_r_toggle == 0)
     {
-        can1_motor[4].setspeed = -4000;
-        can1_motor[5].setspeed = 4000;
+        can1_motor[4].setspeed = -7000;
+        can1_motor[5].setspeed = 7000;
     }
     else {
         can1_motor[4].setspeed = 0;
@@ -175,7 +175,7 @@ void RC::OnRC()
 extern uint8_t flag_shoot;
 void RC::OnPC()
 {
-    if (rc.s[0] != 1) {
+    if (ctrl.mode != CONTROL::PC) {
         const float chassis_speed_scale = GetChassisSpeedScale(flag_shoot);
         const float chassis_speed_limit = para.max_speed * chassis_speed_scale;
         const float spin_speed_limit = para.rota_speed * chassis_speed_scale;
@@ -297,7 +297,7 @@ void RC::OnPC()
         //鼠标控制云台
         if (pc.x != 0 || pc.y != 0)
         {
-            const float yaw_cmd = pc.x / ctrl.pantile.sensitivity_yaw / 3.0f;
+            const float yaw_cmd = pc.x / ctrl.pantile.sensitivity_yaw / 270.0f;
             const float pitch_cmd = pc.y;
             ctrl.Control_Pantile(yaw_cmd, pitch_cmd);
         }
@@ -349,8 +349,8 @@ void RC::OnPC()
         if (f_toggle)
         {
             ctrl.shooter.displayOpenRub = true;
-            can2_motor[0].setspeed = 7000;
-            can2_motor[1].setspeed = -7000;
+            can2_motor[0].setspeed = 6100;
+            can2_motor[1].setspeed = -6100;
         }
         else
         {
@@ -360,17 +360,17 @@ void RC::OnPC()
         }
 
         
-        // ---------------- G键切换 flag_shoot (1 <-> 2) ----------------
-        if (pc.G == 1 && g_last == 0)
+        // ---------------- V键切换 flag_shoot (1 <-> 2) ----------------
+        if (pc.V == 1 && v_last == 0)
         {
-            g_toggle = !g_toggle;
+            v_toggle = !v_toggle;
 
-            if (g_toggle)
+            if (v_toggle)
                 flag_shoot = 1;
             else
                 flag_shoot = 2;
         }
-        g_last = pc.G;
+        v_last = pc.V;
         //ctrl.Control_Pantile_IMU();
     }
 }

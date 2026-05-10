@@ -29,8 +29,13 @@ void CONTROL::Init(std::vector<Motor*> motor)
 			break;
 		}
 	}
-	//pantile_motor[PANTILE::TYPE::PITCH]->setangle = para.initial_pitch;
-	pantile.mark_yaw = para.initial_yaw;
+	if (can1_motor[7].mode == POS) {
+		pantile.mark_yaw = para.initial_yaw;
+		pantile_motor[PANTILE::TYPE::YAW]->setangle = para.initial_yaw;
+	}
+	else if (can1_motor[7].mode == POS_IMU && xuc.IMUDataValid()) {
+		pantile_motor[PANTILE::TYPE::YAW]->setangle = 0.0f;
+	}
 }
 
 
@@ -40,24 +45,19 @@ void CONTROL::Control_Pantile(float ch_yaw, float ch_pitch)
     ch_yaw *= (1.f);// 修改方向
 
 	DMmotor[2].setSpeed = 1.5;
-
-	if (can1_motor[7].mode == POS) {  
-		ctrl.pantile.mark_yaw -= pantile.sensitivity_yaw * ch_yaw;
+	if (can1_motor[7].mode == POS) {
+		ctrl.pantile.mark_yaw -= pantile.sensitivity_yaw * ch_yaw * 30.0f;
 		if (ctrl.pantile.mark_yaw > 8192.0)ctrl.pantile.mark_yaw -= 8192.0;
 		if (ctrl.pantile.mark_yaw < 0.0)ctrl.pantile.mark_yaw += 8192.0;
 		can1_motor[7].setangle = ctrl.pantile.mark_yaw;
-
-		DMmotor[2].setPos += ch_pitch * (PI / 360.f) * 0.1f;
+		DMmotor[2].setPos += ch_pitch * pantile.sensitivity_pitch;
 	}
-	
-	if (can1_motor[7].mode == POS_IMU && imu_pantile.IsDataValid()) {    
-		if (ctrl.mode == CONTROL::AUTOAIM && xuc.GetTargetYaw() != 0)    
-		{
+	else if (can1_motor[7].mode == POS_IMU && xuc.IMUDataValid()) {
+		if ((rc.pc.press_r == 1 || ctrl.mode == CONTROL::AUTOAIM) && xuc.GetTargetYaw() != 0) {
 			can1_motor[7].setangle = xuc.GetTargetYaw();
-			DMmotor[2].setPos -= xuc.GetTargetPitch() * 0.01f;
+			DMmotor[2].setPos -= xuc.GetTargetPitch() * pantile.sensitivity_pitch * 0.1f;
 		}
-		else     // ctrl.mode == CONTROL::RC || PC
-		{
+		else {        // ctrl.mode == CONTROL::RC || PC
 			can1_motor[7].setangle -= pantile.sensitivity_yaw * ch_yaw;
 			if (can1_motor[7].setangle > 180.f) {
 				can1_motor[7].setangle -= 360.f;
@@ -65,21 +65,19 @@ void CONTROL::Control_Pantile(float ch_yaw, float ch_pitch)
 			else if (can1_motor[7].setangle < -180.f) {
 				can1_motor[7].setangle += 360.f;
 			}
-
-			DMmotor[2].setPos += ch_pitch * (PI / 360.f) * 0.1f;
+			DMmotor[2].setPos += ch_pitch * pantile.sensitivity_pitch;
 		}
 	}
-
 	if (DMmotor[2].setPos >= 0.40f) DMmotor[2].setPos = 0.40f;
 	if (DMmotor[2].setPos <= -0.55f) DMmotor[2].setPos = -0.55f;
 }
 
-void CONTROL::PANTILE::Keep_Pantile(float angleKeep, PANTILE::TYPE type, IMU frameOfReference)
+void CONTROL::PANTILE::Keep_Pantile(float angleKeep, PANTILE::TYPE type)
 {
 	float delta = 0;
 	if (type == YAW)
 	{
-		delta = degreeToMechanical(ctrl.GetDelta(angleKeep - frameOfReference.GetAngleYaw()));
+		delta = degreeToMechanical(ctrl.GetDelta(angleKeep - xuc.GetImuYaw()));
 		if (delta <= -4096.f)
 			delta += 8192.f;
 		else if (delta >= 4096.f)
@@ -89,7 +87,7 @@ void CONTROL::PANTILE::Keep_Pantile(float angleKeep, PANTILE::TYPE type, IMU fra
 	}
 	else if (type == PITCH)
 	{
-		delta = degreeToMechanical(ctrl.GetDelta(angleKeep - frameOfReference.GetAnglePitch()));
+		delta = degreeToMechanical(ctrl.GetDelta(angleKeep - xuc.GetImuYaw()));
 		if (delta <= -4096.f)
 			delta += 8192.f;
 		else if (delta >= 4096.f)
@@ -115,26 +113,13 @@ void CONTROL::CHASSIS::Keep_Direction()
 
 void CONTROL::CHASSIS::Update()
 {
-	double s_x = speedx;
-	double s_y = speedy;
-
-	// 车体相对初始朝向的偏角（弧度）
-	double theta = ctrl.GetDelta(
-		mechanicalToDegree(can1_motor[7].angle[now]) - mechanicalToDegree(para.initial_yaw)
-	) / 180.0 * PI;
-
-	double st = sin(theta);
-	double ct = cos(theta);
-
-	// 全局速度 -> 车体速度
-	double vx = s_x * ct + s_y * st;
-	double vy = -s_x * st + s_y * ct;
+	Keep_Direction();
 
 	// 按你的底盘映射顺序：0左前 1右前 2右后 3左后
-	ctrl.chassis_motor[0]->setspeed = +vx + vy - speedz; // 左前
-	ctrl.chassis_motor[1]->setspeed = -vx + vy - speedz; // 右前
-	ctrl.chassis_motor[2]->setspeed = -vx - vy - speedz; // 右后
-	ctrl.chassis_motor[3]->setspeed = +vx - vy - speedz; // 左后
+	ctrl.chassis_motor[0]->setspeed = +speedx + speedy - speedz; // 左前
+	ctrl.chassis_motor[1]->setspeed = -speedx + speedy - speedz; // 右前
+	ctrl.chassis_motor[2]->setspeed = -speedx - speedy - speedz; // 右后
+	ctrl.chassis_motor[3]->setspeed = +speedx - speedy - speedz; // 左后
 
    // ================= 限位保护 =================
 	if (DMmotor[1].setPos > 0.0f)
@@ -171,8 +156,8 @@ void CONTROL::SHOOTER::Update()
 	if (ctrl.mode == RC) {
 		if (openRub)
 		{
-			ctrl.shooter_motor[0]->setspeed = 7000;
-			ctrl.shooter_motor[1]->setspeed = -7000;
+			ctrl.shooter_motor[0]->setspeed = 4000;
+			ctrl.shooter_motor[1]->setspeed = -4000;
 		}
 		else
 		{

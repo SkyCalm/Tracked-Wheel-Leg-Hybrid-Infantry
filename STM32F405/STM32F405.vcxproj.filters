@@ -731,6 +731,9 @@
     <ClInclude Include="Heat_limit.h">
       <Filter>Header files\Inc\device</Filter>
     </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Header files\Inc\device</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="system_stm32f4xx.c">
@@ -752,6 +755,9 @@
       <Filter>Source files\Src\device</Filter>
     </ClCompile>
     <ClCompile Include="Heat_limit.cpp">
+      <Filter>Source files\Src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
       <Filter>Source files\Src\device</Filter>
     </ClCompile>
   </ItemGroup>

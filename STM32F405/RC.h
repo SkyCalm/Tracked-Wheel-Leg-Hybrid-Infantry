@@ -18,8 +18,8 @@ public:
     uint8_t f_toggle = 0;
     uint8_t x_last = 0;
     uint8_t x_toggle = 0;
-    uint8_t g_last = 0;
-    uint8_t g_toggle = 0;
+    uint8_t v_last = 0;
+    uint8_t v_toggle = 0;
     uint8_t key_l_toggle = 0;
 	uint8_t key_l_last = 0;
     uint8_t key_r_toggle = 0;

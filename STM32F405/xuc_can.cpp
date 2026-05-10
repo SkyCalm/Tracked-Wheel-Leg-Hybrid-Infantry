@@ -35,18 +35,17 @@ void XUC::InitCAN(QueueHandle_t canQueue, uint16_t can_id, float scale)
 
 void XUC::Decode()
 {
+    static uint32_t last_rx_tick = 0;
+    constexpr uint32_t RX_TIMEOUT_MS = 200;
+
     if (queueHandler == NULL || *queueHandler == NULL) {
         return;
     }
 
-    static uint32_t last_rx_tick = 0;
-    constexpr uint32_t RX_TIMEOUT_MS = 200; // 超时认为上位机未发送数据
-
-    uint8_t frame[UART_MAX_LEN]{};
-    if (xQueueReceive(*queueHandler, frame, 0) != pdTRUE) {
-        // 无新串口数据，检测是否超时（切换回 POS）
+    // 只在该周期真正收到数据时才处理
+    if (xQueueReceive(*queueHandler, frame, 0) != pdPASS) {
+        // 无新数据：检查是否超时，超时则切回 POS
         if (CNT_1 - last_rx_tick > RX_TIMEOUT_MS) {
-            // 若电机存在，切回编码器跟随模式
             if (&can1_motor[7] != nullptr) {
                 can1_motor[7].mode = POS;
             }
@@ -75,20 +74,20 @@ void XUC::Decode()
         target.pitch = Rx_TJ.pitch_TJ;
         fire_auto = Rx_TJ.shoot_TJ;
 
-        // 若上位机不接管云台，则清零目标，避免误用旧值
         if (Rx_TJ.control_TJ == 0) {
             target.yaw = 0.0f;
             target.pitch = 0.0f;
         }
 
-        // 收到有效数据：切换到 IMU 模式并记录收到时间
+        // 收到有效数据：仅当包内 IMU 数据有效时才切 POS_IMU
         last_rx_tick = CNT_1;
-        if (&can1_motor[7] != nullptr) {
+        if (&can1_motor[7] != nullptr && IMUDataValid()) {
             can1_motor[7].mode = POS_IMU;
         }
 
         return;
     }
+}
 
     // 保留 XUC CAN 通讯接口（当前改为串口，暂不启用）
     // if (m_canQueue == NULL) return;
@@ -111,6 +110,20 @@ void XUC::Decode()
     // fire_auto   = last.data[4];
     // target.yaw = (float)y_q / m_scale;
     // target.pitch = (float)p_q / m_scale;
+//}
+
+bool XUC::IMUDataValid()
+{
+    const float yaw   = Rx_TJ.imu_yaw_TJ;
+    const float pitch = Rx_TJ.imu_pitch_TJ;
+
+    // 两个都是 0 → 上位机没有陀螺仪数据
+    if (yaw == 0.0f && pitch == 0.0f) return false;
+
+    // NaN / Inf 检查
+    if (!std::isfinite(yaw) || !std::isfinite(pitch)) return false;
+
+    return true;
 }
 
 void XUC::Encode()

@@ -35,11 +35,11 @@ public:
 		enum TYPE { YAW, PITCH };
 		float mark_pitch{}, mark_yaw{}, mark_yaw_imu{};
 		PID pantile_PID[3] = { {0.04f,0.f,0.f},{0.05f,0.f,0.f}, {0.f,0.f,0.f} };
-		const float sensitivity_yaw = 4.5f;
-		const float sensitivity_pitch = 0.2f;
+		const float sensitivity_yaw = 0.18f;
+		const float sensitivity_pitch = (PI / 360.f) * 0.1f;
 
 		bool aim = false;
-		void Keep_Pantile(float angleKeep, PANTILE::TYPE type, IMU frameOfReference);
+		void Keep_Pantile(float angleKeep, PANTILE::TYPE type);
 		void Update();
 	};
 
@@ -54,6 +54,7 @@ public:
 		bool fraction = false;
 		bool fullheat_shoot = false;
 		bool heat_ulimit = false;
+		bool jam_block = false;      // 卡弹反转状态，供 UI 使用
 		int16_t shoot_speed = 6000;
 		void Update();
 	};
@@ -64,10 +65,8 @@ public:
 
 	static int16_t Setrange(const int16_t original, const int16_t range);
 	void Control_Pantile(float ch_yaw, float ch_pitch);
-	void Control_Pantile_IMU();
 	float GetDelta(float delta);
 	void Init(std::vector<Motor*> motor);
-	void init_dm();
 private:
 
 };

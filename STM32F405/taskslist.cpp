@@ -146,7 +146,6 @@ void ControlTask(void* pvParameters)
 
 	while (true)
 	{
-        static uint8_t jam_flag = 0;            // 卡弹反转状态标志
 		const float judgeLimit = static_cast<float>(judgement.data.robot_status_t.chassis_power_limit);
 
 		if (flag_shoot==1) {
@@ -162,22 +161,21 @@ void ControlTask(void* pvParameters)
 		xuc.Encode();
 		rc.Update();
 
-		// heat control: update each cycle
 		heatLimiter.Update();
 		
 		if (fabs(can2_motor[0].curspeed) > 5000 && fabs(can2_motor[1].curspeed) > 5000) {
 
-			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1)|| ctrl.shooter.supply_bullet) {
+			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1)|| rc.rc.go_up == 1) {
               fire_hold_cnt = 200;   // 收到开火请求后保持一段时间
 			}
 
             // 1) 若已处于卡弹反转状态，优先保持反转
-			if (jam_flag) {
+			if (ctrl.shooter.jam_block) {
 				can1_motor[6].setspeed = -1500;
 				jam_back_cnt++;
 
 				if (jam_back_cnt >= (JAM_BACK_TIME_MS / CTRL_PERIOD_MS)) {
-					jam_flag = 0;
+					ctrl.shooter.jam_block = false;
 					jam_back_cnt = 0;
 					jam_current_cnt = 0;
 					can1_motor[6].setspeed = 0;
@@ -200,7 +198,7 @@ void ControlTask(void* pvParameters)
 
                 // 过流持续足够时间后进入卡弹反转模式
 				if (jam_current_cnt >= (JAM_DETECT_TIME_MS / CTRL_PERIOD_MS)) {
-					jam_flag = 1;
+					ctrl.shooter.jam_block = true;
 					jam_back_cnt = 0;
 					jam_current_cnt = 0;
 					can1_motor[6].setspeed = -1500;
@@ -219,7 +217,7 @@ void ControlTask(void* pvParameters)
 			fire_hold_cnt = 0;
 			jam_current_cnt = 0;
 			jam_back_cnt = 0;
-			jam_flag = 0;
+			ctrl.shooter.jam_block = false;
 		}
 		ctrl.chassis.Update();
 		ctrl.pantile.Update();
