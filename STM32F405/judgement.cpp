@@ -190,75 +190,78 @@ void Judgement::SendData(void)
     ui.robotId = data.robot_status_t.robot_id;
     ui.clientId = ui.robotId | 0x100;
 
-    if (count < 200)
+    if (ui.count < 300)
     {
-        ui.DisplayStaticUI(count);
+        ui.DisplayStaticUI();
     }
     else
     {
-        switch (count % 10)
-        {
-        case 0: // 电机连接状态: Yaw, Pitch, Shoot_L, Shoot_R
-            ui.UpdateMotorConnection(0, can1_motor[7].getStatus() == FINE);
-            ui.UpdateMotorConnection(1, DMmotor[2].err == 0);
-            ui.UpdateMotorConnection(2, can2_motor[0].getStatus() == FINE);
-            ui.UpdateMotorConnection(3, can2_motor[1].getStatus() == FINE);
-            break;
-        case 1: // 电机连接状态: Chassis_1~4
-            ui.UpdateMotorConnection(4, can1_motor[0].getStatus() == FINE);
-            ui.UpdateMotorConnection(5, can1_motor[1].getStatus() == FINE);
-            ui.UpdateMotorConnection(6, can1_motor[2].getStatus() == FINE);
-            ui.UpdateMotorConnection(7, can1_motor[3].getStatus() == FINE);
-            break;
-        case 2: // 电机连接状态: Leg_1, Leg_2, Track_1, Track_2
-            ui.UpdateMotorConnection(8,  DMmotor[0].err == 0);
-            ui.UpdateMotorConnection(9,  DMmotor[1].err == 0);
-            ui.UpdateMotorConnection(10, can1_motor[4].getStatus() == FINE);
-            ui.UpdateMotorConnection(11, can1_motor[5].getStatus() == FINE);
-            break;
-        case 3: // 命中指示 — 检测护甲 ID 变化
-        {
-            static uint8_t last_armor = 0;
-            static uint8_t hit_persist = 0;
-            const uint8_t cur_armor = data.hurt_data_t.armor_id;
-            if (cur_armor != 0 && cur_armor != last_armor)
-            {
-                last_armor = cur_armor;
-                hit_persist = 10; // 命中后持续显示约 300ms
-            }
-            const bool showHit = (hit_persist > 0);
-            if (hit_persist > 0) hit_persist--;
-            ui.UpdateHitIndicator(showHit);
-            break;
-        }
-        case 4: // 腿高度
-            ui.UpdateLegHeight((DMmotor[0].setPos - DMmotor[1].setPos) * 0.5f / 0.95f);
-            break;
-        case 5: // 卡弹指示
-            ui.UpdateBlockIndicator(ctrl.shooter.jam_block);
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-        case 9:
-            break;
-        default:
-            break;
-        }
+        //switch (count % 10)
+        //{
+        //case 0: // 电机连接状态: Yaw, Pitch, Shoot_L, Shoot_R
+        //    ui.UpdateMotorConnection(0, can1_motor[7].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(1, DMmotor[2].err == 0);
+        //    ui.UpdateMotorConnection(2, can2_motor[0].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(3, can2_motor[1].getStatus() == FINE);
+        //    break;
+        //case 1: // 电机连接状态: Chassis_1~4
+        //    
+        //    break;
+        //case 2: // 电机连接状态: Leg_1, Leg_2, Track_1, Track_2
+        //    ui.UpdateMotorConnection(4, can1_motor[0].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(5, can1_motor[1].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(6, can1_motor[2].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(7, can1_motor[3].getStatus() == FINE);
+        //    break;
+        //case 3: // 命中指示 — 检测护甲 ID 变化
+        //{
+        //    
+        //    break;
+        //}
+        //case 4: // 腿高度
+        //    ui.UpdateMotorConnection(8, DMmotor[0].err == 0);
+        //    ui.UpdateMotorConnection(9, DMmotor[1].err == 0);
+        //    ui.UpdateMotorConnection(10, can1_motor[4].getStatus() == FINE);
+        //    ui.UpdateMotorConnection(11, can1_motor[5].getStatus() == FINE);
+        //    break;
+        //case 5: // 卡弹指示
+        //    
+        //    break;
+        //case 6:
+        //    static uint8_t last_armor = 0;
+        //    static uint8_t hit_persist = 0;
+        //    const uint8_t cur_armor = data.hurt_data_t.armor_id;
+        //    if (cur_armor != 0 && cur_armor != last_armor)
+        //    {
+        //        last_armor = cur_armor;
+        //        hit_persist = 10; // 命中后持续显示约 300ms
+        //    }
+        //    const bool showHit = (hit_persist > 0);
+        //    if (hit_persist > 0) hit_persist--;
+        //    ui.UpdateHitIndicator(showHit);
+        //    break;
+        //case 7:
+        //    ui.UpdateLegHeight((DMmotor[0].setPos - DMmotor[1].setPos) * 0.5f / 0.95f);
+        //    break;
+        //case 8:
+        //    break;
+        //case 9:
+        //    ui.UpdateBlockIndicator(ctrl.shooter.jam_block);
+        //    break;
+        //default:
+        //    break;
+        //}
     }
 
     const uint8_t modeFlag = (flag_shoot == 1) ? 1 : 0;
     ui.DisplayMode(modeFlag);
 
-    if (count > 500)
+    if (ui.count > 500)
     {
         ui.graphInit = true;
     }
 
-    count++;
+    ui.count++;
 }
 
 void Judgement::Decode(uint8_t* m_frame)

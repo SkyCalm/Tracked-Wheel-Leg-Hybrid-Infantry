@@ -175,7 +175,7 @@ void RC::OnRC()
 extern uint8_t flag_shoot;
 void RC::OnPC()
 {
-    if (ctrl.mode != CONTROL::PC) {
+    if (ctrl.mode != CONTROL::RC) {
         const float chassis_speed_scale = GetChassisSpeedScale(flag_shoot);
         const float chassis_speed_limit = para.max_speed * chassis_speed_scale;
         const float spin_speed_limit = para.rota_speed * chassis_speed_scale;
@@ -298,7 +298,7 @@ void RC::OnPC()
         if (pc.x != 0 || pc.y != 0)
         {
             const float yaw_cmd = pc.x / ctrl.pantile.sensitivity_yaw / 270.0f;
-            const float pitch_cmd = pc.y;
+            const float pitch_cmd = pc.y/4.0f;
             ctrl.Control_Pantile(yaw_cmd, pitch_cmd);
         }
 

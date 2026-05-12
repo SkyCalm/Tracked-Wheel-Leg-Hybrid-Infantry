@@ -9,6 +9,7 @@
 #include "led.h"
 #include "delay.h"
 #include "HTmotor.h"
+#include "UI.h"
 #include "Power_limit.h"
 #include "supercap.h"
 #include "judgement.h"
@@ -103,9 +104,8 @@ void MotorUpdateTask(void* pvParameters)
 		for (auto& motor : can1_motor)motor.Ontimer(can1.data, can1.temp_data);
 
 		for (auto& motor : can2_motor)motor.Ontimer(can2.data, can2.temp_data);
-		if (rc.rc.s[0] != 1) {
+
 			powerLimiter.ApplyToMotors(can1);
-		}
 
         for (int i = 0; i < 3; ++i) {             // 解算前 3 个关节（ID1~ID3）
 			DMmotor[i].State_Decode(can2, can2.jointidata);
@@ -165,8 +165,8 @@ void ControlTask(void* pvParameters)
 		
 		if (fabs(can2_motor[0].curspeed) > 5000 && fabs(can2_motor[1].curspeed) > 5000) {
 
-			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1)|| rc.rc.go_up == 1) {
-              fire_hold_cnt = 200;   // 收到开火请求后保持一段时间
+			if (((rc.pc.press_r == 1 && xuc.fire_auto == 1)|| rc.pc.press_l == 1) || rc.rc.go_up == 1) {
+              fire_hold_cnt = 30;   // 收到开火请求后保持一段时间
 			}
 
             // 1) 若已处于卡弹反转状态，优先保持反转
@@ -245,6 +245,7 @@ void DecodeTask(void* pvParameters)
 
 void UiSendTask(void* pvParameters)
 {
+
 	static uint8_t b_last = 0;
 
 	while (true)
@@ -253,6 +254,8 @@ void UiSendTask(void* pvParameters)
 		if (rc.pc.B == 1 && b_last == 0)
 		{
 			rc.judement_start = true;
+			ui.count = 0;
+			ui.graphInit = 0;
 		}
 		b_last = rc.pc.B;
 

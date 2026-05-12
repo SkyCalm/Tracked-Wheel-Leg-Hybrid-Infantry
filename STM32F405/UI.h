@@ -159,7 +159,7 @@ public:
     void Init(UART* huart);
 
     // 显示方法
-    void DisplayStaticUI(uint32_t count);
+    void DisplayStaticUI();
     // void DisplayCapState(uint8_t capState);
     void DisplayMode(uint8_t mode);
     // void DisplayCapture(bool isCapture);
@@ -170,6 +170,7 @@ public:
     void UpdateLegHeight(float percent); // 0.0f ~ 1.0f
 
     bool graphInit = false;
+    uint32_t count = 0;
     uint16_t robotId = UI_Data_RobotID_BStandard3;
     uint16_t clientId = UI_Data_CilentID_BStandard3;
 
@@ -216,3 +217,5 @@ private:
     uint8_t  m_onlineCount        = 0;      // 当前在线电机数
     uint8_t  m_lastOnlineCount    = 0xFF;   // 上次发送的在线数
 };
+
+extern UI ui;

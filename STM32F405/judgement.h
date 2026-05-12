@@ -37,8 +37,6 @@ public:
 
     float voltage;
 
-    UI ui;
-
     void Init(UART* huart, uint32_t baud, USART_TypeDef* uart_base);
     void GetData(void);
     void SendData(void);

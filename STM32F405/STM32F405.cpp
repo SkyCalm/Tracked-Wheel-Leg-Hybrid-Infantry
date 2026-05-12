@@ -57,6 +57,7 @@ Judgement judgement;
 PARAMETER para;
 SUPERCAP supercap;
 XUC xuc;
+UI ui;
 
 namespace
 {

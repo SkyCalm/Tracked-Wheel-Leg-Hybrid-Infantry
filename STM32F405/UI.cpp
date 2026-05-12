@@ -8,7 +8,7 @@ void UI::Init(UART* huart)
     m_uart = huart;
 }
 
-void UI::DisplayStaticUI(uint32_t count)
+void UI::DisplayStaticUI()
 {
     string_data_struct_t staticStringUI;
 
