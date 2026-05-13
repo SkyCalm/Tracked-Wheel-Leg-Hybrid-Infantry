@@ -145,7 +145,35 @@ void UI::DisplayMode(uint8_t mode)
     }
 
     Char_Draw(&modeData, (char*)"MD1", graphOperate, 6, UI_Color_Green,
-        30, 7, 3, 280, 700, modeChar);
+        30, 7, 3, 200, 760, modeChar);
+    Char_ReFresh(&modeData);
+}
+
+void UI::DisplayRUB(uint8_t mode)
+{
+    char modeChar[7] = {};
+    string_data_struct_t modeData = {};
+    const uint32_t graphOperate = graphInit ? UI_Graph_Change : UI_Graph_ADD;
+
+    if (mode == 1)
+    {
+        modeChar[0] = 'O';
+        modeChar[1] = 'P';
+        modeChar[2] = 'E';
+        modeChar[3] = 'N';
+    }
+    else
+    {
+        modeChar[0] = 'C';
+        modeChar[1] = 'L';
+        modeChar[2] = 'O';
+        modeChar[3] = 'S';
+        modeChar[4] = 'E';
+        modeChar[5] = 'D';
+    }
+
+    Char_Draw(&modeData, (char*)"RUB", graphOperate, 6, UI_Color_Green,
+        30, 7, 3, 200, 640, modeChar);
     Char_ReFresh(&modeData);
 }
 

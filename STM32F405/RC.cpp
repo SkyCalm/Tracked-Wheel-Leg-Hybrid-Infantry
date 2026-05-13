@@ -349,8 +349,8 @@ void RC::OnPC()
         if (f_toggle)
         {
             ctrl.shooter.displayOpenRub = true;
-            can2_motor[0].setspeed = 6100;
-            can2_motor[1].setspeed = -6100;
+            can2_motor[0].setspeed = ctrl.shooter.shoot_speed;
+            can2_motor[1].setspeed = -ctrl.shooter.shoot_speed;
         }
         else
         {

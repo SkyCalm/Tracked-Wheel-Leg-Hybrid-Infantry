@@ -162,6 +162,7 @@ public:
     void DisplayStaticUI();
     // void DisplayCapState(uint8_t capState);
     void DisplayMode(uint8_t mode);
+    void DisplayRUB(uint8_t mode);
     // void DisplayCapture(bool isCapture);
     // void DisplayCapVoltage(float capVoltage);
     void UpdateMotorConnection(uint8_t motorId, bool online);

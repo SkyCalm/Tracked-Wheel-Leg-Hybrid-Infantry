@@ -33,7 +33,6 @@ public:
     uint8_t resourseRFID;  // 资源岛增益
 
     int32_t nBullet = 0;
-    int32_t count = 0;
 
     float voltage;
 

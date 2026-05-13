@@ -156,8 +156,8 @@ void CONTROL::SHOOTER::Update()
 	if (ctrl.mode == RC) {
 		if (openRub)
 		{
-			ctrl.shooter_motor[0]->setspeed = 5600;
-			ctrl.shooter_motor[1]->setspeed = -5600;
+			ctrl.shooter_motor[0]->setspeed = shoot_speed;
+			ctrl.shooter_motor[1]->setspeed = -shoot_speed;
 		}
 		else
 		{
