@@ -30,6 +30,7 @@ extern "C" {
 #include "stm32f4xx_hal_can.h"
 #include "stm32f4xx_hal.h"
 #include "FreeRTOS.h"
+#include "semphr.h"
 
 class CAN
 {
@@ -45,6 +46,7 @@ public:
 	uint8_t jointpdata[6][8]{};
 	uint8_t jointidata[6][8];
 	CAN_HandleTypeDef hcan;
+	SemaphoreHandle_t txMutex = NULL;
 	BaseType_t pd_Rx = false, pd_Tx = false;
 	
 private:
@@ -59,4 +61,3 @@ private:
 #endif /* __CAN_H__ */
 
 extern CAN can1, can2;
-

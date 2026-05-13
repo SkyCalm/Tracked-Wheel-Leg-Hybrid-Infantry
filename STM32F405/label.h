@@ -54,6 +54,10 @@ extern TaskHandle_t StartTask_Handler;
 #define LED_STK_SIZE 		128  
 extern TaskHandle_t LedTask_Handler;
 
+#define ARM_TASK_PRIO		1
+#define ARM_STK_SIZE 		256
+extern TaskHandle_t ArmTask_Handler;
+
 #define DECODE_TASK_PRIO		5
 #define DECODE_STK_SIZE 		128  
 extern TaskHandle_t DecodeTask_Handler;

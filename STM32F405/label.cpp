@@ -19,9 +19,9 @@ void PARAMETER::Init()
 */
 TaskHandle_t StartTask_Handler;
 TaskHandle_t LedTask_Handler;
+TaskHandle_t ArmTask_Handler;
 TaskHandle_t DecodeTask_Handler;
 TaskHandle_t ControlTask_Handler;
 TaskHandle_t MotorTask_Handler;
 TaskHandle_t CanTxTask_Handler;
 TaskHandle_t UiSendTask_Handler;
-

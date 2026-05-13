@@ -52,7 +52,7 @@ uint32_t DMMOTOR::GetControlStdId() const
     }
 }
 
-DMMOTOR& DMMOTOR::State_Decode(CAN hcan, uint8_t idata[][8])
+DMMOTOR& DMMOTOR::State_Decode(CAN& hcan, uint8_t idata[][8])
 {
     uint8_t* d = idata[ID - 1];
     err = static_cast<uint8_t>((d[0] >> 4) & 0x0F);
@@ -137,17 +137,17 @@ float DMMOTOR::GetTorque()
     return torque;
 }
 
-void DMMOTOR::Motor_Start(CAN hcan, uint32_t id)
+void DMMOTOR::Motor_Start(CAN& hcan, uint32_t id)
 {
     CanComm_ControlCmd(hcan, CMD_MOTOR_MODE, id);
 }
 
-void DMMOTOR::Motor_Stop(CAN hcan, uint32_t id)
+void DMMOTOR::Motor_Stop(CAN& hcan, uint32_t id)
 {
     CanComm_ControlCmd(hcan, CMD_RESET_MODE, id);
 }
 
-void DMMOTOR::CanComm_ControlCmd(CAN hcan, uint8_t cmd, uint32_t id)// 控制指令封装
+void DMMOTOR::CanComm_ControlCmd(CAN& hcan, uint8_t cmd, uint32_t id)// 控制指令封装
 {
     uint8_t buf[8] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 };
 
@@ -190,7 +190,7 @@ int DMMOTOR::float_to_uint(float x, float x_min, float x_max, int bits)
     return (int)((x - offset) * ((float)((1 << bits) - 1)) / span);
 }
 
-void DMMOTOR::DMmotor_Ontimer(CAN hcan, float f_kp, float f_kd, uint8_t* odata)
+void DMMOTOR::DMmotor_Ontimer(CAN& hcan, float f_kp, float f_kd, uint8_t* odata)
 {
     EnsureCan2PdataMutex();
 

@@ -4,6 +4,7 @@
 #include "imu.h"          // ? 新增：为了 CanRxMsg_t / g_imu_can_queue
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "task.h"
 #include "xuc_can.h" 
 volatile uint32_t can2_dm_cnt[6] = { 0 };   // [1]..[5] 有效
 volatile uint32_t can2_dm_last_motor_id = 0;
@@ -39,6 +40,8 @@ void CAN::Init(CAN_TypeDef* instance)
     HAL_CAN_Init(&hcan);
 
     InitFilter();
+
+    txMutex = xSemaphoreCreateMutex();
 
     HAL_CAN_Receive_IT(&hcan, CAN_FIFO0);
 }
@@ -112,12 +115,28 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* hcan)
 
 HAL_StatusTypeDef CAN::Transmit(const uint32_t ID, const uint8_t* const pData, const uint8_t len)
 {
+    if (pData == nullptr || len > 8U) {
+        return HAL_ERROR;
+    }
+
+    const bool useMutex = (txMutex != NULL) &&
+        (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED);
+    if (useMutex && xSemaphoreTake(txMutex, pdMS_TO_TICKS(2)) != pdTRUE) {
+        return HAL_BUSY;
+    }
+
     hcan.pTxMsg->StdId = ID;
     hcan.pTxMsg->IDE = CAN_ID_STD;
     hcan.pTxMsg->RTR = CAN_RTR_DATA;
     hcan.pTxMsg->DLC = len;
     memcpy(hcan.pTxMsg->Data, pData, len);
-    return HAL_CAN_Transmit(&hcan, 10);
+    const HAL_StatusTypeDef status = HAL_CAN_Transmit(&hcan, 5);
+
+    if (useMutex) {
+        xSemaphoreGive(txMutex);
+    }
+
+    return status;
 }
 uint32_t error = 0;
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* hcan)

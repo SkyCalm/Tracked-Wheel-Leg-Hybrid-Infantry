@@ -48,10 +48,10 @@ void start_task(void* pvParameters)
 
 	xTaskCreate((TaskFunction_t)ArmTask,
 		(const char*)"ArmTask",
-		(uint16_t)LED_STK_SIZE,
+		(uint16_t)ARM_STK_SIZE,
 		(void*)NULL,
-		(UBaseType_t)LED_TASK_PRIO,
-		(TaskHandle_t*)&LedTask_Handler);
+		(UBaseType_t)ARM_TASK_PRIO,
+		(TaskHandle_t*)&ArmTask_Handler);
 
 	xTaskCreate((TaskFunction_t)DecodeTask,
 		(const char*)"DecodeTask",
@@ -330,7 +330,6 @@ void ArmTask(void* pvParameters)
 		vTaskDelay(dm_reenable_pending ? 20 : 300);
 	}
 }
-
 
 
 
