@@ -194,7 +194,8 @@ void Judgement::SendData(void)
     static uint8_t hit_persist = 0;
     const uint8_t cur_armor = data.hurt_data_t.armor_id;
     const bool showHit = (hit_persist > 0);
-    const uint8_t RUBFlag = (ctrl.shooter.displayOpenRub == 1) ? 1 : 0;
+    const uint8_t RUBFlag = (ui.displayOpenRub == 1) ? 1 : 0;
+	const uint8_t TrackFlag = (ui.displayTrack == 1) ? 1 : 0;
     const uint8_t modeFlag = (flag_shoot == 1) ? 1 : 0;
     if (ui.count < 200)
     {
@@ -244,8 +245,9 @@ void Judgement::SendData(void)
         case 7:
             ui.UpdateLegHeight((DMmotor[0].setPos - DMmotor[1].setPos) * 0.5f / 0.95f);
             break;
-        //case 8:
-        //    break;
+        case 8:
+            ui.DisplayTrack(TrackFlag);
+            break;
         case 9:
             ui.UpdateBlockIndicator(ctrl.shooter.jam_block);
             break;
@@ -253,11 +255,6 @@ void Judgement::SendData(void)
             break;
         }
     }
-
-
-    
-
-    
 
     if (ui.count > 500)
     {

@@ -90,19 +90,19 @@ void UI::DisplayStaticUI()
         Char_ReFresh(&staticStringUI);
         break;
     }
-    case 70: // Shoot_L 文字
+    case 70: 
     {
-        char str[2] = "L";
-        Char_Draw(&staticStringUI, (char*)"SL", UI_Graph_ADD, 0, UI_Color_Main,
-            20, 1, 2, 1666, 587, str);
+        char str[6] = "SHOOT";
+        Char_Draw(&staticStringUI, (char*)"ST", UI_Graph_ADD, 0, UI_Color_Main,
+            20, 5, 2, 1700, 587, str);
         Char_ReFresh(&staticStringUI);
         break;
     }
-    case 80: // Shoot_R 文字
+    case 80: 
     {
-        char str[2] = "R";
-        Char_Draw(&staticStringUI, (char*)"SR", UI_Graph_ADD, 0, UI_Color_Main,
-            20, 1, 2, 1826, 587, str);
+        char str[6] = "TRACK";
+        Char_Draw(&staticStringUI, (char*)"TK", UI_Graph_ADD, 0, UI_Color_Green,
+            30, 3, 3, 60, 700, str);
         Char_ReFresh(&staticStringUI);
         break;
     }
@@ -174,6 +174,34 @@ void UI::DisplayRUB(uint8_t mode)
 
     Char_Draw(&modeData, (char*)"RUB", graphOperate, 6, UI_Color_Green,
         30, 7, 3, 200, 640, modeChar);
+    Char_ReFresh(&modeData);
+}
+
+void UI::DisplayTrack(uint8_t mode)
+{
+    char modeChar[7] = {};
+    string_data_struct_t modeData = {};
+    const uint32_t graphOperate = graphInit ? UI_Graph_Change : UI_Graph_ADD;
+
+    if (mode == 1)
+    {
+        modeChar[0] = 'O';
+        modeChar[1] = 'P';
+        modeChar[2] = 'E';
+        modeChar[3] = 'N';
+    }
+    else
+    {
+        modeChar[0] = 'C';
+        modeChar[1] = 'L';
+        modeChar[2] = 'O';
+        modeChar[3] = 'S';
+        modeChar[4] = 'E';
+        modeChar[5] = 'D';
+    }
+
+    Char_Draw(&modeData, (char*)"TRK", graphOperate, 6, UI_Color_Green,
+        30, 7, 3, 200, 700, modeChar);
     Char_ReFresh(&modeData);
 }
 

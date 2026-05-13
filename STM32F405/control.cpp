@@ -68,8 +68,8 @@ void CONTROL::Control_Pantile(float ch_yaw, float ch_pitch)
 			DMmotor[2].setPos += ch_pitch * pantile.sensitivity_pitch;
 		}
 	}
-	if (DMmotor[2].setPos >= 0.40f) DMmotor[2].setPos = 0.40f;
-	if (DMmotor[2].setPos <= -0.55f) DMmotor[2].setPos = -0.55f;
+	if (DMmotor[2].setPos >= 0.50f) DMmotor[2].setPos = 0.50f;
+	if (DMmotor[2].setPos <= -0.25f) DMmotor[2].setPos = -0.25f;
 }
 
 void CONTROL::PANTILE::Keep_Pantile(float angleKeep, PANTILE::TYPE type)

@@ -1,5 +1,6 @@
 ﻿#include "label.h"
 #include "RC.h"
+#include "UI.h"
 #include "control.h"
 #include "HTmotor.h"
 
@@ -166,7 +167,6 @@ void RC::OnRC()
         can2_motor[4].setspeed = 0;
         can2_motor[5].setspeed = 0;
         can2_motor[6].setspeed = 0;
-        can2_motor[7].setspeed = 0;
         DMmotor[0].setSpeed = 0;
         DMmotor[1].setSpeed = 0;
         DMmotor[2].setSpeed = 0;
@@ -328,11 +328,13 @@ void RC::OnPC()
 
         if (r_toggle)
         {
+            ui.displayTrack = true;
             can1_motor[4].setspeed = -4000;
             can1_motor[5].setspeed = 4000;
         }
         else
         {
+            ui.displayTrack = false;
             can1_motor[4].setspeed = 0;
             can1_motor[5].setspeed = 0;
         }
@@ -348,13 +350,13 @@ void RC::OnPC()
 
         if (f_toggle)
         {
-            ctrl.shooter.displayOpenRub = true;
+            ui.displayOpenRub = true;
             can2_motor[0].setspeed = ctrl.shooter.shoot_speed;
             can2_motor[1].setspeed = -ctrl.shooter.shoot_speed;
         }
         else
         {
-            ctrl.shooter.displayOpenRub = false;
+            ui.displayOpenRub = false;
             can2_motor[0].setspeed = 0;
             can2_motor[1].setspeed = 0;
         }

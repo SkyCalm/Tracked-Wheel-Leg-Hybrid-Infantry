@@ -163,6 +163,7 @@ public:
     // void DisplayCapState(uint8_t capState);
     void DisplayMode(uint8_t mode);
     void DisplayRUB(uint8_t mode);
+    void DisplayTrack(uint8_t mode);
     // void DisplayCapture(bool isCapture);
     // void DisplayCapVoltage(float capVoltage);
     void UpdateMotorConnection(uint8_t motorId, bool online);
@@ -172,6 +173,8 @@ public:
 
     bool graphInit = false;
     uint32_t count = 0;
+    bool displayOpenRub = false;
+    bool displayTrack = false;
     uint16_t robotId = UI_Data_RobotID_BStandard3;
     uint16_t clientId = UI_Data_CilentID_BStandard3;
 
